@@ -9,9 +9,18 @@ clock = pygame.time.Clock()
 try :
     dino = pygame.image.load("dino.png")
     dino_img = pygame.transform.scale(dino, (80, 80))
+    dino_mask = pygame.mask.from_surface(dino_img)
 except:
     print("Nu s-a putut incarca imaginea dino.png")
     dino_img = None
+    dino_mask = None
+#daca se incarca dino in calculam maska pentru coliziune cand ii aplecat
+if dino_img:
+    dino_bent_img = pygame.transform.scale(dino_img, (40, 40))
+    dino_bent_mask = pygame.mask.from_surface(dino_bent_img)
+else:
+    dino_bent_img = None
+    dino_bent_mask = None
 # Setarile initiale ale dinozaurului
 dino_position = pygame.Rect(50, 375, 90, 90)
 viteza_dino = 0
@@ -24,18 +33,22 @@ number_of_jumps = 0
 try :
     cactus = pygame.image.load("cactus.png")
     cactus_img = pygame.transform.scale(cactus, (50, 100))
+    cactus_mask = pygame.mask.from_surface(cactus_img)
 except:
     print("Nu s-a putut incarca imaginea cactus.png")
     cactus_img = None
+    cactus_mask = None
 cactus_position = pygame.Rect(800, 350, 50, 100)
 cactus_speed = 5
 # Incarcarea imaginii pasarii
 try:
     bird = pygame.image.load("bird.png")
     bird_img = pygame.transform.scale(bird, (80, 50))
+    bird_mask = pygame.mask.from_surface(bird_img)
 except:
     print("Nu s-a putut incarca imaginea bird.png")
     bird_img = None
+    bird_mask = None
 bird_position = pygame.Rect(800, 325, 80, 50)
 bird_speed = 7
 # Tipul initial de obstacol
@@ -48,7 +61,7 @@ def generate_obstacle():
         if type == 'cactus':
             obs = pygame.Rect(800 + i* 50, 350, 50, 100)
         else:
-            bird_y = random.randint(275, 375)
+            bird_y = random.randint(275, 385)
             obs = pygame.Rect(800 + i* 80, bird_y, 80, 50)
         obstacole.append({'type': type, 'obs': obs})
 generate_obstacle()
@@ -64,15 +77,15 @@ while running:
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
             running = False
-        #Comenzi de la tastatura
+        #Comenzi de la tastatura (sus jos r)
         if event.type == pygame.KEYDOWN:
-            # Saritura dinozaurului
+            # Saritura dinozaurului (sus, poate de maxim 2)
             if event.key == pygame.K_UP and not is_bending and not game_over:
                 if number_of_jumps < 2:
                     viteza_dino = inaltime_saritura
                     is_jumping = True
                     number_of_jumps += 1
-            # Aplecarea dinozaurului
+            # Aplecarea dinozaurului (jos)
             if event.key == pygame.K_DOWN and not is_jumping and not game_over:
                 is_bending = True
                 dino_position = pygame.Rect(50, 415, 40, 40)
@@ -115,8 +128,18 @@ while running:
                 obstacle['obs'].x -= cactus_speed
             else:
                 obstacle['obs'].x -= bird_speed
-            if dino_position.colliderect(obstacle['obs']):
-                game_over = True
+            if is_bending:
+                dino_current_mask = dino_bent_mask
+            else:
+                dino_current_mask = dino_mask
+            if obstacle['type'] == 'cactus':
+                obstacle_mask = cactus_mask
+            else:
+                obstacle_mask = bird_mask
+            offset = (obstacle['obs'].x - dino_position.x, obstacle['obs'].y - dino_position.y)
+            if dino_current_mask and obstacle_mask:
+                if dino_current_mask.overlap(obstacle_mask, offset):
+                    game_over = True
         new_obstacles = []
         for obstacle in obstacole:
             if obstacle['obs'].x > -100:
@@ -128,7 +151,6 @@ while running:
     pygame.draw.line(screen, (0, 0, 0), (0, 445), (800, 445), 2)
     if dino_img:
         if is_bending:
-            dino_bent_img = pygame.transform.scale(dino_img, (40, 40))
             screen.blit(dino_bent_img, (dino_position.x, dino_position.y))
         else:
             screen.blit(dino_img, (dino_position.x, dino_position.y))
