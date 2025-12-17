@@ -1,10 +1,13 @@
 # Game
 Clona a jocului Chrome T-Rex Runner in python dar cu mai multe moduri
-1. CLASSIC
-    -obiectele si norii sunt inspirate din jocul original
-    -dino este chiar dinozaurul din jocul de la chrome
-2. FUN MODE
-    -totul ii mai colorat, original si cu multe detalii
+Moduri:
+    1. CLASSIC
+        -obiectele si norii sunt inspirate din jocul original
+        -dino este chiar dinozaurul din jocul de la chrome
+    2. FUN MODE
+        -totul ii mai colorat, original si cu multe detalii
+    3. Christmas
+        -combinatie intre classic si Christmas vibe
 Structura cod:
     Functii:
         - incarca_imagini

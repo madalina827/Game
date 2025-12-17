@@ -20,6 +20,8 @@ def incarca_imagini(mod):
     sufix = "" 
     if mod == "fun":
         sufix = "_fun" 
+    if mod == "Christmas":
+        sufix = "_xmas"
     # Dino
     try:
         dino = pygame.image.load(f"dino{sufix}.png")
@@ -74,6 +76,7 @@ game_state = "menu"
 current_mode = "classic"
 buton_classic = pygame.Rect(300, 300, 200, 60)
 buton_fun = pygame.Rect(300, 400, 200, 60)
+buton_xmas = pygame.Rect(300, 500, 200, 60)
 font_menu = pygame.font.SysFont(None, 40)
 def reset_game(mode):
     global cactus_speed, bird_speed, distanta_intre_obstacole, score, viteza_dino
@@ -122,6 +125,10 @@ while running:
                         current_mode = "fun"
                         reset_game("fun")
                         game_state = "run"
+                    elif buton_xmas.collidepoint(mouse_pos):
+                        current_mode = "Christmas"
+                        reset_game("Christmas")
+                        game_state = "run"
         #Butoane posibile de apasat in timpul jocului
         elif game_state == "run":
             if event.type == pygame.KEYDOWN:
@@ -154,6 +161,9 @@ while running:
         pygame.draw.rect(screen, (200, 0, 200), buton_fun)
         text_fun = font_menu.render("FUN MODE", True, (255, 255, 255))
         screen.blit(text_fun, (buton_fun.x + 30, buton_fun.y + 15))
+        pygame.draw.rect(screen, (0, 150, 0), buton_xmas)
+        text_xmas = font_menu.render("CHRISTMAS", True, (255, 255, 255))
+        screen.blit(text_xmas, (buton_xmas.x + 20, buton_xmas.y + 15))
     #Cum arata jocul + cum isi modifica vitezele si obstacolele
     elif game_state == "run":
         if not game_over:
