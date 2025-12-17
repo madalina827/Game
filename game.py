@@ -109,6 +109,7 @@ while running:
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
             running = False
+        #Alegerea modului
         if game_state == "menu":
             if event.type == pygame.MOUSEBUTTONDOWN:
                 if event.button == 1:
@@ -121,6 +122,7 @@ while running:
                         current_mode = "fun"
                         reset_game("fun")
                         game_state = "run"
+        #Butoane posibile de apasat in timpul jocului
         elif game_state == "run":
             if event.type == pygame.KEYDOWN:
                 if event.key == pygame.K_UP and not is_bending and not game_over:
@@ -141,6 +143,7 @@ while running:
                     dino_position = pygame.Rect(50, dino_position.y, 40, 40)
                     if not is_jumping:
                         dino_position.y = 375
+    #Cum arata Meniul
     if game_state == "menu":
         screen.fill((255, 255, 255))
         titlu = font_game_over.render("ALEGE MODUL", True, (0, 0, 0))
@@ -151,6 +154,7 @@ while running:
         pygame.draw.rect(screen, (200, 0, 200), buton_fun)
         text_fun = font_menu.render("FUN MODE", True, (255, 255, 255))
         screen.blit(text_fun, (buton_fun.x + 30, buton_fun.y + 15))
+    #Cum arata jocul + cum isi modifica vitezele si obstacolele
     elif game_state == "run":
         if not game_over:
             sol = 415 if is_bending else 375
@@ -232,6 +236,7 @@ while running:
                     screen.blit(bird_img, (obstacle['obs'].x, obstacle['obs'].y))
                 else:
                     pygame.draw.rect(screen, (0, 0, 225), obstacle['obs'])
+        #Scor + afisare pierdere joc
         if score > max_score:
             max_score = score
         max_score_text = font_max_score.render(f"Scor Maxim: {max_score}", True, (0, 0, 0))
