@@ -5,6 +5,14 @@ pygame.init()
 screen = pygame.display.set_mode((800, 700))
 pygame.display.set_caption("Joc chrome")
 clock = pygame.time.Clock()
+#Incarcarea imaginii norilor
+try :
+    cloud = pygame.image.load("clouds.png")
+    cloud_img = pygame.transform.scale(cloud, (200, 150))
+except:
+    print("Nu s-a putut incarca imaginea cloud.png")
+    cloud_img = None
+cloud = []
 # Incarcarea imaginii dinozaurului
 try :
     dino = pygame.image.load("dino.png")
@@ -16,7 +24,7 @@ except:
     dino_mask = None
 #daca se incarca dino in calculam maska pentru coliziune cand ii aplecat
 if dino_img:
-    dino_bent_img = pygame.transform.scale(dino_img, (40, 40))
+    dino_bent_img = pygame.transform.scale(dino_img, (40, 36))
     dino_bent_mask = pygame.mask.from_surface(dino_bent_img)
 else:
     dino_bent_img = None
@@ -29,6 +37,7 @@ gravity = 0.8
 is_jumping = False
 is_bending = False
 number_of_jumps = 0
+
 #Incarcarea imaginii cactusului
 try :
     cactus = pygame.image.load("cactus.png")
@@ -96,6 +105,7 @@ while running:
                 dino_position = pygame.Rect(50, 375, 90, 90)
                 viteza_dino = 0
                 score = 0
+                cloud.clear()
                 is_jumping = False
                 is_bending = False
                 obstacole.clear()
@@ -117,6 +127,22 @@ while running:
             is_jumping = False
             viteza_dino = 0
             number_of_jumps = 0
+        dist_clouds = False
+        if len(cloud) == 0:
+            if random.randint(0, 100) < 1:
+                dist_clouds = True
+        else:
+            last_cloud = cloud[-1]
+            if last_cloud.x < 600:
+                if random.randint(0, 100) < 1:
+                    dist_clouds = True
+        if dist_clouds:
+            y_cloud = random.randint(50, 200)
+            nou_cloud = pygame.Rect(800, y_cloud, 100, 60)
+            cloud.append(nou_cloud)
+        for cl in cloud:
+            cl.x -= 2
+        cloud = [cl for cl in cloud if cl.x > -150]    
         if len(obstacole) == 0:
             generate_obstacle()
         else:
@@ -146,8 +172,20 @@ while running:
                 new_obstacles.append(obstacle)
             else:
                 score += 1
+                if score % 50 == 0:
+                    cactus_speed += 0.5
+                    bird_speed += 0.5
+                if score % 100 == 0:
+                    if distanta_intre_obstacole > 300:
+                        distanta_intre_obstacole = distanta_intre_obstacole - 20
         obstacole = new_obstacles
     screen.fill((255, 255, 255))
+    if cloud_img:
+        for c in cloud:
+            screen.blit(cloud_img, (c.x, c.y))
+    else:
+        for c in cloud:
+            pygame.draw.rect(screen, (220, 220, 220), c)
     pygame.draw.line(screen, (0, 0, 0), (0, 445), (800, 445), 2)
     if dino_img:
         if is_bending:
