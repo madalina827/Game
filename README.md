@@ -1,5 +1,6 @@
 # Game
 Clona a jocului Chrome T-Rex Runner in python dar cu mai multe moduri
+Se folosesc sagetile
 Moduri:
     1. CLASSIC
         -obiectele si norii sunt inspirate din jocul original
